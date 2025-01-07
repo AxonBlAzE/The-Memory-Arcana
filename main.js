@@ -17,8 +17,15 @@ let firstCard = null;
 let secondCard = null;
 let canFlip = true;
 let score = 0;
+let currentLevel = 1;
+let maxLevel = 21; // Maximum number of pairs possible
+let pairsInCurrentLevel = 2; // Start with 2 pairs
 const cards = [];
-const cardValues = [1, 2, 3, 4, 5, 6]; // Tarot card values
+
+// Function to generate card values based on current level
+function generateCardValues() {
+    return Array.from({ length: pairsInCurrentLevel }, (_, i) => i + 1);
+}
 
 // Card Creation Function
 function createCard(value, position) {
@@ -44,9 +51,9 @@ function createCard(value, position) {
 
     const card = new THREE.Mesh(cardGeometry, materials);
     card.position.set(position.x, position.y, 0);
-    card.userData.value = value; // Store the value of the card for matching logic
-    card.userData.isFlipped = false; // Track if the card is flipped
-    card.userData.matched = false; // Track if the card is matched
+    card.userData.value = value;
+    card.userData.isFlipped = false;
+    card.userData.matched = false;
 
     return card;
 }
@@ -77,32 +84,75 @@ function flipCard(card) {
     }
 }
 
-function showCongratulationsMessage() {
+// Level Complete Message
+function showLevelCompleteMessage() {
     const overlay = document.getElementById('congratulations-overlay');
-    overlay.style.display = 'flex'; // Show the overlay
+    const message = document.getElementById('congratulations-message');
 
-    const playAgainButton = document.getElementById('play-again-button');
-    playAgainButton.addEventListener('click', () => {
-        overlay.style.display = 'none'; // Hide the overlay
+    message.innerHTML = `
+        <h1>Level ${currentLevel} Complete!</h1>
+        <p>You've matched all ${pairsInCurrentLevel} pairs!</p>
+        <p>Ready for Level ${currentLevel + 1}?</p>
+        <button id="next-level-button">Continue Journey</button>
+    `;
 
-        // Reset game logic
-        resetGame();
+    overlay.style.display = 'flex';
+
+    const nextLevelButton = document.getElementById('next-level-button');
+    // Remove any existing event listeners
+    const newButton = nextLevelButton.cloneNode(true);
+    nextLevelButton.parentNode.replaceChild(newButton, nextLevelButton);
+
+    newButton.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        currentLevel++;
+        pairsInCurrentLevel = Math.min(currentLevel + 1, maxLevel);
+        initGame(); // Start next level
     });
 }
 
+// Game Complete Message
+function showGameCompleteMessage() {
+    const overlay = document.getElementById('congratulations-overlay');
+    const message = document.getElementById('congratulations-message');
+
+    message.innerHTML = `
+        <h1>Magnificent Victory!</h1>
+        <p>You have mastered all ${maxLevel} levels!</p>
+        <p>You are truly a Master of the Mystical Cards!</p>
+        <button id="play-again-button">Start New Journey</button>
+    `;
+
+    overlay.style.display = 'flex';
+
+    const playAgainButton = document.getElementById('play-again-button');
+    // Remove any existing event listeners
+    const newButton = playAgainButton.cloneNode(true);
+    playAgainButton.parentNode.replaceChild(newButton, playAgainButton);
+
+    newButton.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        currentLevel = 1;
+        pairsInCurrentLevel = 2;
+        initGame(); // Restart from level 1
+    });
+}
+
+// Reset Game Function
 function resetGame() {
-    // Reset variables
     score = 0;
     firstCard = null;
     secondCard = null;
+    currentLevel = 1;
+    pairsInCurrentLevel = 2;
 
     document.getElementById('score').textContent = `Score: ${score}`;
+    document.getElementById('level').textContent = `Level: ${currentLevel}`;
+    document.getElementById('pairs').textContent = `Pairs to Match: ${pairsInCurrentLevel}`;
 
-    // Remove all cards from the scene
     cards.forEach(card => scene.remove(card));
-    cards.length = 0; // Clear the array
+    cards.length = 0;
 
-    // Reinitialize the game
     initGame();
 }
 
@@ -113,27 +163,28 @@ function checkMatch() {
     const isMatch = firstCard.userData.value === secondCard.userData.value;
 
     if (isMatch) {
-        // Disable matched cards
         firstCard.userData.matched = true;
         secondCard.userData.matched = true;
-
-        // Reset selection
         firstCard = null;
         secondCard = null;
         canFlip = true;
 
-        // Update score
         score += 1;
         document.getElementById('score').textContent = `Score: ${score}`;
 
-        // Check if game is complete
-        if (score === cardValues.length) {
-            showCongratulationsMessage();
+        // Check if level is complete
+        if (score === pairsInCurrentLevel) {
+            setTimeout(() => {
+                if (currentLevel < maxLevel) {
+                    showLevelCompleteMessage();
+                } else {
+                    showGameCompleteMessage();
+                }
+            }, 500); // Short delay before showing message
         }
     } else {
         canFlip = false;
 
-        // Unflip cards after delay
         setTimeout(() => {
             gsap.to(firstCard.rotation, { y: 0, duration: 1 });
             gsap.to(secondCard.rotation, {
@@ -148,6 +199,7 @@ function checkMatch() {
         }, 1000);
     }
 }
+
 
 // Shuffle Array Function
 function shuffleArray(array) {
@@ -185,33 +237,82 @@ function animate() {
     renderer.render(scene, camera);
 }
 
+// Calculate Grid Layout
+function calculateGridLayout(totalCards) {
+    // For even numbers of cards, prefer rectangular layouts
+    if (totalCards === 8) { // 4 pairs
+        return { rows: 2, cols: 4 };
+    } else if (totalCards === 12) { // 6 pairs
+        return { rows: 3, cols: 4 };
+    } else if (totalCards === 16) { // 8 pairs
+        return { rows: 4, cols: 4 };
+    } else if (totalCards === 20) { // 10 pairs
+        return { rows: 4, cols: 5 };
+    }
+
+    // For other cases, find the most square-like rectangle
+    const sqrt = Math.sqrt(totalCards);
+    const cols = Math.ceil(sqrt);
+    const rows = Math.ceil(totalCards / cols);
+
+    return { rows, cols };
+}
+
 // Game Initialization Function
 function initGame() {
-    // Create doubled array of values (e.g., two copies of each tarot card)
-    let gameValues = [...cardValues, ...cardValues];
+    // Clear existing cards
+    cards.forEach(card => scene.remove(card));
+    cards.length = 0;
+
+    // Reset score for new level
+    score = 0;
+
+    // Update UI
+    document.getElementById('score').textContent = `Score: ${score}`;
+    document.getElementById('level').textContent = `Level: ${currentLevel}`;
+    document.getElementById('pairs').textContent = `Pairs to Match: ${pairsInCurrentLevel}`;
+
+    // Generate and shuffle card values
+    let gameValues = [...generateCardValues(), ...generateCardValues()];
     gameValues = shuffleArray(gameValues);
 
-    let xPos = -2.5; // Adjust grid starting position for better layout
-    let yPos = 2;
+    // Calculate grid layout
+    const totalCards = gameValues.length;
+    const { rows, cols } = calculateGridLayout(totalCards);
 
-    for (let i = 0; i < gameValues.length; i++) {
-        const value = gameValues[i];
-        const card = createCard(value, { x: xPos, y: yPos });
+    // Calculate card spacing and starting positions
+    const cardWidth = 1.5;
+    const cardHeight = 2;
+    const spacing = 0.2;
+
+    const totalWidth = (cols * cardWidth) + ((cols - 1) * spacing);
+    const totalHeight = (rows * cardHeight) + ((rows - 1) * spacing);
+
+    const startX = -(totalWidth / 2) + (cardWidth / 2);
+    const startY = (totalHeight / 2) - (cardHeight / 2);
+
+    // Create and position cards
+    for (let i = 0; i < totalCards; i++) {
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+
+        const xPos = startX + (col * (cardWidth + spacing));
+        const yPos = startY - (row * (cardHeight + spacing));
+
+        const card = createCard(gameValues[i], { x: xPos, y: yPos });
         cards.push(card);
         scene.add(card);
-
-        xPos += 1.5; // Adjust spacing between cards horizontally
-        if ((i + 1) % 4 === 0) { // Move to the next row after every four cards
-            xPos = -2.5; // Reset to starting X position
-            yPos -= 2;   // Move down for the next row
-        }
     }
+
+    // Adjust camera position based on grid size
+    const maxDimension = Math.max(totalWidth, totalHeight);
+    camera.position.z = maxDimension * 1.2;
 }
 
 // Event Listeners
 window.addEventListener('click', onMouseClick);
 window.addEventListener('resize', onWindowResize);
 
-// Start the game when textures are loaded and ready
+// Initialize game
 initGame();
 animate();

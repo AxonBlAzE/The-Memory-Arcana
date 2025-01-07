@@ -1,69 +1,297 @@
+/* Import fantasy fonts */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:wght@400;600&display=swap");
+
 /* General Body Styling */
 body {
   margin: 0;
+  background: #0f0f1a;
+  font-family: "Crimson Text", serif;
+  overflow: hidden;
 }
 
-/* Score Display */
-#score {
+#game-info {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  color: white;
-  font-size: 24px;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e0d5ff;
+  font-family: "Cinzel", serif;
+  text-shadow: 0 0 10px rgba(123, 83, 255, 0.5);
   z-index: 100;
+  padding: 15px 30px;
+  border: 2px solid rgba(159, 111, 245, 0.3);
+  border-radius: 10px;
+  background: rgba(26, 26, 46, 0.7);
+  backdrop-filter: blur(5px);
+  letter-spacing: 2px;
+  animation: scoreGlow 2s infinite alternate;
+  display: flex;
+  gap: 20px;
 }
 
-/* Game Container */
+#game-info div {
+  font-size: 24px;
+}
+
+#next-level-button {
+  margin-top: 30px;
+  padding: 15px 40px;
+  font-family: "Cinzel", serif;
+  font-size: 20px;
+  color: #fff;
+  background: linear-gradient(45deg, #6b4fb5, #9f6ff5);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(123, 83, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+#next-level-button:hover {
+  background: linear-gradient(45deg, #9f6ff5, #6b4fb5);
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(123, 83, 255, 0.5);
+}
+
+#next-level-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  animation: buttonShine 3s infinite;
+}
+
+/* Game Container with Mystical Background */
 #game-container {
   width: 100vw;
   height: 100vh;
+  background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);
+  position: relative;
 }
 
-/* Congratulations Overlay */
+/* Add magical particles effect container */
+#game-container::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#ffffff 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.1;
+  animation: starryBackground 20s linear infinite;
+}
+
+/* Fantasy-themed Congratulations Overlay */
 #congratulations-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 30, 0.95) 0%,
+    rgba(40, 20, 60, 0.95) 50%,
+    rgba(10, 10, 30, 0.95) 100%
+  );
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 200; /* Ensure it appears above everything else */
+  z-index: 200;
+  animation: fadeIn 0.5s ease-in;
 }
 
-/* Congratulations Message Box */
+/* Magical Message Box */
 #congratulations-message {
-  background-color: white;
-  padding: 30px;
-  border-radius: 10px;
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
+  padding: 50px 70px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(123, 83, 255, 0.3), 0 0 90px rgba(123, 83, 255, 0.1);
+  border: 2px solid #9f6ff5;
+  position: relative;
+  animation: floatIn 0.8s ease-out, messageGlow 3s infinite alternate;
 }
 
+/* Decorative corners */
+#congratulations-message::before,
+#congratulations-message::after,
+#congratulations-message > div::before,
+#congratulations-message > div::after {
+  /* content: "✦"; */
+  position: absolute;
+  color: #9f6ff5;
+  font-size: 24px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#congratulations-message::before {
+  top: 10px;
+  left: 10px;
+}
+
+#congratulations-message::after {
+  top: 10px;
+  right: 10px;
+}
+
+#congratulations-message > div::before {
+  bottom: 10px;
+  left: 10px;
+}
+
+#congratulations-message > div::after {
+  bottom: 10px;
+  right: 10px;
+}
+
+/* Magical Title */
 #congratulations-message h1 {
-  font-size: 36px;
-  color: #333;
+  font-family: "Cinzel", serif;
+  font-size: 42px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(123, 83, 255, 0.5);
+  margin-bottom: 20px;
+  letter-spacing: 3px;
 }
 
+/* Message Text */
 #congratulations-message p {
-  font-size: 18px;
-  color: #666;
+  font-family: "Crimson Text", serif;
+  font-size: 22px;
+  color: #d0bfff;
+  margin: 20px 0;
+  line-height: 1.6;
+  letter-spacing: 1px;
 }
 
-/* Play Again Button */
+/* Mystical Button */
 #play-again-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  color: white;
-  background-color: #007bff; /* Blue button */
+  margin-top: 30px;
+  padding: 15px 40px;
+  font-family: "Cinzel", serif;
+  font-size: 20px;
+  color: #fff;
+  background: linear-gradient(45deg, #6b4fb5, #9f6ff5);
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(123, 83, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
 }
 
 #play-again-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background: linear-gradient(45deg, #9f6ff5, #6b4fb5);
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(123, 83, 255, 0.5);
+}
+
+#play-again-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  animation: buttonShine 3s infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes messageGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(123, 83, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(123, 83, 255, 0.5);
+  }
+}
+
+@keyframes scoreGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(123, 83, 255, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 20px rgba(123, 83, 255, 0.8);
+  }
+}
+
+@keyframes buttonShine {
+  0% {
+    transform: rotate(45deg) translateX(-100%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(100%);
+  }
+}
+
+@keyframes starryBackground {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #congratulations-message {
+    padding: 30px 40px;
+  }
+
+  #congratulations-message h1 {
+    font-size: 32px;
+  }
+
+  #congratulations-message p {
+    font-size: 18px;
+  }
+
+  #play-again-button {
+    padding: 12px 30px;
+    font-size: 16px;
+  }
+
+  #score {
+    font-size: 20px;
+    padding: 10px 20px;
+  }
 }

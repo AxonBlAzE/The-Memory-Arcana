@@ -7,15 +7,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
   </head>
   <body>
-    <div id="score">Score: 0</div>
+    <div id="game-info">
+      <div id="score">Score: 0</div>
+      <div id="level">Level: 1</div>
+      <div id="pairs">Pairs to Match: 2</div>
+    </div>
     <div id="game-container"></div>
-    <script src="main.js"></script>
     <div id="congratulations-overlay" style="display: none">
       <div id="congratulations-message">
-        <h1>Congratulations!</h1>
-        <p>You've matched all the cards!</p>
-        <button id="play-again-button">Play Again</button>
+        <h1>Mystical Victory!</h1>
+        <p>You have mastered the ancient art of matching the sacred cards!</p>
+        <button id="play-again-button">Begin New Journey</button>
       </div>
     </div>
+    <script src="main.js"></script>
   </body>
 </html>
