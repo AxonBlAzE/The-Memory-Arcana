@@ -1,0 +1,53 @@
+# Node.js dependencies (if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS-specific files
+.DS_Store              # macOS
+Thumbs.db              # Windows
+desktop.ini            # Windows
+
+# Temporary files and folders
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+
+# Build output (if applicable)
+dist/
+build/
+
+# Cache files
+.cache/
+.vscode/
+.dist
+
+# IDE-specific files
+.idea/
+.vscode/
+*.iml
+
+# Three.js cache (if applicable)
+threejs_cache/
+
+# Generated assets or temporary assets (if applicable)
+assets/cards/*.tmp     # Temporary card assets
+
+# Environment variables (if applicable)
+.env
+
+# Ignore compiled or temporary files
+*.out
+*.exe
+*.class
+
+# Ignore Git-specific files
+.git/
