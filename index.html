@@ -2,23 +2,7 @@
 <html>
   <head>
     <title>3D Memory Game</title>
-    <style>
-      body {
-        margin: 0;
-      }
-      #score {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        color: white;
-        font-size: 24px;
-        z-index: 100;
-      }
-      #game-container {
-        width: 100vw;
-        height: 100vh;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
   </head>
@@ -26,5 +10,12 @@
     <div id="score">Score: 0</div>
     <div id="game-container"></div>
     <script src="main.js"></script>
+    <div id="congratulations-overlay" style="display: none">
+      <div id="congratulations-message">
+        <h1>Congratulations!</h1>
+        <p>You've matched all the cards!</p>
+        <button id="play-again-button">Play Again</button>
+      </div>
+    </div>
   </body>
 </html>

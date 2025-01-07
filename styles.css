@@ -1,0 +1,69 @@
+/* General Body Styling */
+body {
+  margin: 0;
+}
+
+/* Score Display */
+#score {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  font-size: 24px;
+  z-index: 100;
+}
+
+/* Game Container */
+#game-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Congratulations Overlay */
+#congratulations-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200; /* Ensure it appears above everything else */
+}
+
+/* Congratulations Message Box */
+#congratulations-message {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+#congratulations-message h1 {
+  font-size: 36px;
+  color: #333;
+}
+
+#congratulations-message p {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Play Again Button */
+#play-again-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #007bff; /* Blue button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#play-again-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}

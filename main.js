@@ -77,6 +77,35 @@ function flipCard(card) {
     }
 }
 
+function showCongratulationsMessage() {
+    const overlay = document.getElementById('congratulations-overlay');
+    overlay.style.display = 'flex'; // Show the overlay
+
+    const playAgainButton = document.getElementById('play-again-button');
+    playAgainButton.addEventListener('click', () => {
+        overlay.style.display = 'none'; // Hide the overlay
+
+        // Reset game logic
+        resetGame();
+    });
+}
+
+function resetGame() {
+    // Reset variables
+    score = 0;
+    firstCard = null;
+    secondCard = null;
+
+    document.getElementById('score').textContent = `Score: ${score}`;
+
+    // Remove all cards from the scene
+    cards.forEach(card => scene.remove(card));
+    cards.length = 0; // Clear the array
+
+    // Reinitialize the game
+    initGame();
+}
+
 // Check Match Function
 function checkMatch() {
     if (!firstCard || !secondCard) return;
@@ -99,21 +128,16 @@ function checkMatch() {
 
         // Check if game is complete
         if (score === cardValues.length) {
-            alert('Congratulations! You won!');
+            showCongratulationsMessage();
         }
     } else {
         canFlip = false;
 
         // Unflip cards after delay
         setTimeout(() => {
-            gsap.to(firstCard.rotation, {
-                y: 0,
-                duration: 1
-            });
+            gsap.to(firstCard.rotation, { y: 0, duration: 1 });
             gsap.to(secondCard.rotation, {
-                y: 0,
-                duration: 1,
-                onComplete: () => {
+                y: 0, duration: 1, onComplete: () => {
                     firstCard.userData.isFlipped = false;
                     secondCard.userData.isFlipped = false;
                     firstCard = null;
