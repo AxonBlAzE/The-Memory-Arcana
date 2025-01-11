@@ -239,7 +239,7 @@ function animate() {
 
 // Calculate Grid Layout
 function calculateGridLayout(totalCards) {
-    // For even numbers of cards, prefer rectangular layouts
+    // rectangular layouts for even number of cards
     if (totalCards === 8) { // 4 pairs
         return { rows: 2, cols: 4 };
     } else if (totalCards === 12) { // 6 pairs
@@ -250,7 +250,7 @@ function calculateGridLayout(totalCards) {
         return { rows: 4, cols: 5 };
     }
 
-    // For other cases, find the most square-like rectangle
+    // closest square-like rectangle for odd number of cards
     const sqrt = Math.sqrt(totalCards);
     const cols = Math.ceil(sqrt);
     const rows = Math.ceil(totalCards / cols);
