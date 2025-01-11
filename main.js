@@ -26,6 +26,81 @@ let timerInterval;
 let finalScore = 0;
 let levelsCompleted = 0;
 
+
+// sfx
+const flipSound = new Audio('assets/sfx/flipcard.mp3');
+const levelCompleteSound = new Audio('assets/sfx/level-complete.wav');
+const matchSound = new Audio('assets/sfx/match.wav');
+const gameCompleteSound = new Audio('assets/sfx/game-complete.mp3');
+
+// bg
+const backgroundShader = {
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float time;
+        varying vec2 vUv;
+
+        void main() {
+            vec2 st = vUv;
+
+            // Gradient background
+            vec3 color = mix(vec3(0.05, 0.02, 0.1), vec3(0.3, 0.1, 0.4), st.y);
+
+            // Add subtle glowing effect
+            float glow = sin(time + st.x * 10.0) * 0.1;
+            color += vec3(glow, glow * 0.5, glow);
+
+            // Add vignette effect
+            float vignette = smoothstep(0.8, 0.5, length(st - 0.5));
+            color *= vignette;
+
+            gl_FragColor = vec4(color, 1.0);
+        }
+    `,
+    uniforms: {
+        time: { value: 0 }
+    }
+};
+
+const backgroundGeometry = new THREE.PlaneGeometry(2, 2);
+const backgroundMaterial = new THREE.ShaderMaterial({
+    vertexShader: backgroundShader.vertexShader,
+    fragmentShader: backgroundShader.fragmentShader,
+    uniforms: backgroundShader.uniforms,
+});
+const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+backgroundMesh.material.depthWrite = false;
+scene.add(backgroundMesh);
+
+// Add Ambient Light
+const ambientLight = new THREE.AmbientLight(0x663399, 0.5); // Soft purple light
+scene.add(ambientLight);
+
+// Add Particles
+const particleGeometry = new THREE.BufferGeometry();
+const particleCount = 500;
+const positions = new Float32Array(particleCount * 3);
+
+for (let i = 0; i < particleCount * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 50; // Spread particles randomly in space
+}
+
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particleMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.1,
+    transparent: true,
+});
+const particleMesh = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particleMesh);
+
+
 // Function to generate card values based on current level
 function generateCardValues() {
     return Array.from({ length: pairsInCurrentLevel }, (_, i) => i + 1);
@@ -33,7 +108,7 @@ function generateCardValues() {
 
 // Card Creation Function
 function createCard(value, position) {
-    const cardGeometry = new THREE.BoxGeometry(2.0, 3.0, 0.15);
+    const cardGeometry = new THREE.BoxGeometry(2.7, 4.0, 0.3);
 
     // Load the back texture (e.g., back.png)
     const backTexture = textureLoader.load(`assets/cards/back.png`);
@@ -66,6 +141,10 @@ function createCard(value, position) {
 function flipCard(card) {
     if (!canFlip || card.userData.isFlipped || card.userData.matched) return;
 
+    // Play flip sound
+    flipSound.currentTime = 0; // Reset the sound to start
+    flipSound.play();
+
     if (!firstCard) {
         firstCard = card;
         gsap.to(card.rotation, {
@@ -90,9 +169,15 @@ function flipCard(card) {
     }
 }
 
+
 // Level Complete Message
 function showLevelCompleteMessage() {
     levelsCompleted++;
+
+    // Play level completion sound
+    levelCompleteSound.currentTime = 0; // Reset to start
+    levelCompleteSound.play();
+
     const overlay = document.getElementById('congratulations-overlay');
     const message = document.getElementById('congratulations-message');
 
@@ -119,6 +204,10 @@ function showLevelCompleteMessage() {
 
 // Game Complete Message
 function showGameCompleteMessage() {
+
+    gameCompleteSound.currentTime = 0;
+    gameCompleteSound.play();
+
     const overlay = document.getElementById('congratulations-overlay');
     const message = document.getElementById('congratulations-message');
 
@@ -160,11 +249,12 @@ function startTimer() {
 
         // Check if time is up
         if (gameTimer <= 0) {
-            clearInterval(timerInterval);
-            showFinalScore();
+            clearInterval(timerInterval); // Stop the timer
+            showFinalScore(); // Show final score pop-up
         }
     }, 1000);
 }
+
 
 function calculateFinalScore() {
     // Score formula: (levels completed * 1000) + (remaining time * 10)
@@ -214,6 +304,11 @@ function checkMatch() {
     const isMatch = firstCard.userData.value === secondCard.userData.value;
 
     if (isMatch) {
+
+        matchSound.currentTime = 0;
+        matchSound.play();
+
+
         firstCard.userData.matched = true;
         secondCard.userData.matched = true;
         firstCard = null;
@@ -285,6 +380,9 @@ function onWindowResize() {
 // Animation Loop
 function animate() {
     requestAnimationFrame(animate);
+
+    backgroundShader.uniforms.time.value += 0.01;
+
     renderer.render(scene, camera);
 }
 
@@ -331,12 +429,17 @@ document.getElementById('start-game-button').addEventListener('click', () => {
     initGame();
 });
 
+// Play Sound on User Interaction
+document.addEventListener('click', () => {
+    flipSound.play().catch(() => {
+        console.log('Audio playback started after user interaction.');
+    });
+}, { once: true });
+
 // Game Initialization Function
 function initGame() {
-
     // Start timer for new game
-    if (currentLevel === 1) {
-        gameTimer = 600; // Reset timer for new game
+    if (currentLevel === 1 && timerInterval == null) { // Only reset timer for a new game
         levelsCompleted = 0;
         startTimer();
     }
@@ -362,9 +465,9 @@ function initGame() {
     const { rows, cols } = calculateGridLayout(totalCards);
 
     // Increased fixed card dimensions
-    const cardWidth = 2.0;    // Increased from 1.5
-    const cardHeight = 3.0;   // Increased from 2.0
-    const spacing = 0.5;      // Increased spacing between cards
+    const cardWidth = 3.0; // Increased from 1.5
+    const cardHeight = 4.0; // Increased from 2.0
+    const spacing = 1; // Increased spacing between cards
 
     const totalWidth = (cols * cardWidth) + ((cols - 1) * spacing);
     const totalHeight = (rows * cardHeight) + ((rows - 1) * spacing);
@@ -388,7 +491,7 @@ function initGame() {
     // Adjust camera position to maintain consistent card sizes
     const aspectRatio = window.innerWidth / window.innerHeight;
     const maxGridDimension = Math.max(totalWidth / aspectRatio, totalHeight);
-    const baseDistance = 7;  // Increased base distance
+    const baseDistance = 7; // Increased base distance
     camera.position.z = baseDistance + (maxGridDimension * 0.7);
 }
 
