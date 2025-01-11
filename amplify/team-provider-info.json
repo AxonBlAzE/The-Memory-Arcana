@@ -1,20 +1,15 @@
 {
-  "dev": {
+  "staging": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-cardgame-dev-83470-authRole",
-      "UnauthRoleArn": "arn:aws:iam::653033715666:role/amplify-cardgame-dev-83470-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::653033715666:role/amplify-cardgame-dev-83470-authRole",
+      "AuthRoleName": "amplify-thememoryarcana-staging-76401-authRole",
+      "UnauthRoleArn": "arn:aws:iam::653033715666:role/amplify-thememoryarcana-staging-76401-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::653033715666:role/amplify-thememoryarcana-staging-76401-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-cardgame-dev-83470-deployment",
-      "UnauthRoleName": "amplify-cardgame-dev-83470-unauthRole",
-      "StackName": "amplify-cardgame-dev-83470",
-      "StackId": "arn:aws:cloudformation:us-east-1:653033715666:stack/amplify-cardgame-dev-83470/27078080-d032-11ef-bc48-0e21bd1f327f",
-      "AmplifyAppId": "d1dujwefildgfk"
-    },
-    "categories": {
-      "auth": {
-        "cardgame3d28072f": {}
-      }
+      "DeploymentBucketName": "amplify-thememoryarcana-staging-76401-deployment",
+      "UnauthRoleName": "amplify-thememoryarcana-staging-76401-unauthRole",
+      "StackName": "amplify-thememoryarcana-staging-76401",
+      "StackId": "arn:aws:cloudformation:us-east-1:653033715666:stack/amplify-thememoryarcana-staging-76401/c98242a0-d046-11ef-bf23-0affc56c5a05",
+      "AmplifyAppId": "d2p1yzrq3i4ltv"
     }
   }
 }

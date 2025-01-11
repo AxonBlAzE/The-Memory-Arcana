@@ -370,6 +370,7 @@ function onMouseClick(event) {
     }
 }
 
+
 // Window Resize Handler
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
