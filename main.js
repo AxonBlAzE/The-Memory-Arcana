@@ -21,6 +21,10 @@ let currentLevel = 1;
 let maxLevel = 21; // Maximum number of pairs possible
 let pairsInCurrentLevel = 2; // Start with 2 pairs
 const cards = [];
+let gameTimer = 600; // 10 minutes in seconds
+let timerInterval;
+let finalScore = 0;
+let levelsCompleted = 0;
 
 // Function to generate card values based on current level
 function generateCardValues() {
@@ -29,7 +33,7 @@ function generateCardValues() {
 
 // Card Creation Function
 function createCard(value, position) {
-    const cardGeometry = new THREE.BoxGeometry(1, 1.5, 0.1);
+    const cardGeometry = new THREE.BoxGeometry(2.0, 3.0, 0.15);
 
     // Load the back texture (e.g., back.png)
     const backTexture = textureLoader.load(`assets/cards/back.png`);
@@ -65,6 +69,7 @@ function flipCard(card) {
     if (!firstCard) {
         firstCard = card;
         gsap.to(card.rotation, {
+            x: -0.3, // Maintain table tilt
             y: Math.PI,
             duration: 1,
             onComplete: () => {
@@ -74,6 +79,7 @@ function flipCard(card) {
     } else if (!secondCard && card !== firstCard) {
         secondCard = card;
         gsap.to(card.rotation, {
+            x: -0.3, // Maintain table tilt
             y: Math.PI,
             duration: 1,
             onComplete: () => {
@@ -86,20 +92,20 @@ function flipCard(card) {
 
 // Level Complete Message
 function showLevelCompleteMessage() {
+    levelsCompleted++;
     const overlay = document.getElementById('congratulations-overlay');
     const message = document.getElementById('congratulations-message');
 
     message.innerHTML = `
         <h1>Level ${currentLevel} Complete!</h1>
-        <p>You've matched all ${pairsInCurrentLevel} pairs!</p>
-        <p>Ready for Level ${currentLevel + 1}?</p>
+        <p>Time Remaining: ${Math.floor(gameTimer / 60)}:${(gameTimer % 60).toString().padStart(2, '0')}</p>
+        <p>Current Score: ${calculateFinalScore()}</p>
         <button id="next-level-button">Continue Journey</button>
     `;
 
     overlay.style.display = 'flex';
 
     const nextLevelButton = document.getElementById('next-level-button');
-    // Remove any existing event listeners
     const newButton = nextLevelButton.cloneNode(true);
     nextLevelButton.parentNode.replaceChild(newButton, nextLevelButton);
 
@@ -107,7 +113,7 @@ function showLevelCompleteMessage() {
         overlay.style.display = 'none';
         currentLevel++;
         pairsInCurrentLevel = Math.min(currentLevel + 1, maxLevel);
-        initGame(); // Start next level
+        initGame();
     });
 }
 
@@ -136,6 +142,51 @@ function showGameCompleteMessage() {
         pairsInCurrentLevel = 2;
         initGame(); // Restart from level 1
     });
+}
+
+function startTimer() {
+    clearInterval(timerInterval); // Clear any existing timer
+
+    timerInterval = setInterval(() => {
+        gameTimer--;
+
+        // Convert seconds to minutes and seconds display
+        const minutes = Math.floor(gameTimer / 60);
+        const seconds = gameTimer % 60;
+
+        // Update timer display
+        document.getElementById('timer').textContent =
+            `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        // Check if time is up
+        if (gameTimer <= 0) {
+            clearInterval(timerInterval);
+            showFinalScore();
+        }
+    }, 1000);
+}
+
+function calculateFinalScore() {
+    // Score formula: (levels completed * 1000) + (remaining time * 10)
+    return (levelsCompleted * 1000) + (gameTimer * 10);
+}
+
+function showFinalScore() {
+    clearInterval(timerInterval);
+    finalScore = calculateFinalScore();
+
+    const overlay = document.getElementById('congratulations-overlay');
+    const message = document.getElementById('congratulations-message');
+
+    message.innerHTML = `
+        <h1>Game Over!</h1>
+        <p>Levels Completed: ${levelsCompleted}</p>
+        <p>Time Remaining: ${Math.floor(gameTimer / 60)}:${(gameTimer % 60).toString().padStart(2, '0')}</p>
+        <p>Final Score: ${finalScore}</p>
+        <button id="play-again-button">Play Again</button>
+    `;
+
+    overlay.style.display = 'flex';
 }
 
 // Reset Game Function
@@ -258,8 +309,38 @@ function calculateGridLayout(totalCards) {
     return { rows, cols };
 }
 
+function applyCardTilt(card) {
+    // Tilt cards slightly forward
+    card.rotation.x = -0.3; // Tilt on X axis for table-like appearance
+
+    // Add subtle random rotation on Y and Z for natural look
+    card.rotation.y = (Math.random() - 0.5) * 0.1;
+    card.rotation.z = (Math.random() - 0.5) * 0.1;
+}
+
+// Main Menu Logic
+document.getElementById('start-game-button').addEventListener('click', () => {
+    // Hide main menu
+    document.getElementById('main-menu').style.display = 'none';
+
+    // Show game elements
+    document.getElementById('game-info').style.display = 'flex';
+    document.getElementById('game-container').style.display = 'block';
+
+    // Start the game
+    initGame();
+});
+
 // Game Initialization Function
 function initGame() {
+
+    // Start timer for new game
+    if (currentLevel === 1) {
+        gameTimer = 600; // Reset timer for new game
+        levelsCompleted = 0;
+        startTimer();
+    }
+
     // Clear existing cards
     cards.forEach(card => scene.remove(card));
     cards.length = 0;
@@ -280,10 +361,10 @@ function initGame() {
     const totalCards = gameValues.length;
     const { rows, cols } = calculateGridLayout(totalCards);
 
-    // Calculate card spacing and starting positions
-    const cardWidth = 1.5;
-    const cardHeight = 2;
-    const spacing = 0.2;
+    // Increased fixed card dimensions
+    const cardWidth = 2.0;    // Increased from 1.5
+    const cardHeight = 3.0;   // Increased from 2.0
+    const spacing = 0.5;      // Increased spacing between cards
 
     const totalWidth = (cols * cardWidth) + ((cols - 1) * spacing);
     const totalHeight = (rows * cardHeight) + ((rows - 1) * spacing);
@@ -304,10 +385,14 @@ function initGame() {
         scene.add(card);
     }
 
-    // Adjust camera position based on grid size
-    const maxDimension = Math.max(totalWidth, totalHeight);
-    camera.position.z = maxDimension * 1.2;
+    // Adjust camera position to maintain consistent card sizes
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const maxGridDimension = Math.max(totalWidth / aspectRatio, totalHeight);
+    const baseDistance = 7;  // Increased base distance
+    camera.position.z = baseDistance + (maxGridDimension * 0.7);
 }
+
+
 
 // Event Listeners
 window.addEventListener('click', onMouseClick);
