@@ -10,6 +10,14 @@
       "StackName": "amplify-thememoryarcana-staging-76401",
       "StackId": "arn:aws:cloudformation:us-east-1:653033715666:stack/amplify-thememoryarcana-staging-76401/c98242a0-d046-11ef-bf23-0affc56c5a05",
       "AmplifyAppId": "d2p1yzrq3i4ltv"
+    },
+    "categories": {
+      "auth": {
+        "thememoryarcana07105325": {}
+      },
+      "storage": {
+        "gameres": {}
+      }
     }
   }
 }

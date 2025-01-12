@@ -31,7 +31,7 @@ let levelsCompleted = 0;
 const flipSound = new Audio('assets/sfx/flipcard.mp3');
 const levelCompleteSound = new Audio('assets/sfx/level-complete.wav');
 const matchSound = new Audio('assets/sfx/match.wav');
-const gameCompleteSound = new Audio('assets/sfx/game-complete.mp3');
+const gameCompleteSound = new Audio('assets/sfx/game-complete.wav');
 
 // bg
 const backgroundShader = {

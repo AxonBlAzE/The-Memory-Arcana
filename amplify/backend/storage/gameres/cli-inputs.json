@@ -1,0 +1,18 @@
+{
+  "resourceName": "gameres",
+  "policyUUID": "60fb5071",
+  "bucketName": "thememoryarcanacb372fd242c94d16b2aedc22157b2b18",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
