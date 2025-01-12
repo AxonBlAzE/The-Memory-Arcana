@@ -419,6 +419,8 @@ function applyCardTilt(card) {
 
 // Main Menu Logic
 document.getElementById('start-game-button').addEventListener('click', () => {
+    console.log('Start Game button clicked');
+
     // Hide main menu
     document.getElementById('main-menu').style.display = 'none';
 
@@ -439,6 +441,8 @@ document.addEventListener('click', () => {
 
 // Game Initialization Function
 function initGame() {
+    console.log("Initializing game...");
+
     // Start timer for new game
     if (currentLevel === 1 && timerInterval == null) { // Only reset timer for a new game
         levelsCompleted = 0;
